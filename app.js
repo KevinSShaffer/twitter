@@ -13,23 +13,14 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 var User = require('./models/user');
+passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
-passport.use(new LocalStrategy(
-  function(username, password, next) {
-    User.findOne({ username: username }, function (err, user) {
-      if (err) { 
-      	return next(err); 
-      } else if (!user) { 
-      	return next(null, false); 
-      } else if (!user.verifyPassword(password)) { 
-      	return next(null, false); 
-      }
 
-      return next(null, user);
-    });
-  }
-));
+app.use(function(req, res, next) {
+	res.locals.user = req.user;
+	next();
+});
 
 app.get('/', function(req, res) {
 	res.render('index');
@@ -39,10 +30,9 @@ app.get('/login', function(req, res) {
 	res.render('login');
 });
 app.post('/login', passport.authenticate('local', {
-		failureRedirect: '/login'
-	}), function(req, res) {
-		res.redirect('/');
-});
+		failureRedirect: '/login',
+		successRedirect: '/'
+	}));
 
 app.get('/register', function(req, res) {
 	res.render('register');
@@ -53,14 +43,13 @@ app.post('/register', function(req, res) {
 		if (err) {
 			res.send('Unable to register');
 		} else {
-			var authenticate = User.authenticate();
-			authenticate(newUser.username, newUser.password, function(err, result) {
-			if (err) {
-				res.send('Unable to authentice user');
-			} else {
-				res.user = result;
-				res.redirect('/');
-			}
+			User.authenticate(newUser.username, newUser.password, function(err, result) {
+				if (err) {
+					res.send('Unable to authentice user');
+				} else {
+					res.user = result;
+					res.redirect('/');
+				}
 			});
 		}
 	});
