@@ -31,6 +31,7 @@ app.use(function(req, res, next) {
 
 // Routes
 app.use(require('./routes/index'));
+app.use(require('./routes/account'));
 
 // Start server and connect to DB
 var port = process.env.PORT || 3000;

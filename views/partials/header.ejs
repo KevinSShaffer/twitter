@@ -6,8 +6,8 @@
 <body>
 <% if (!user) { %>
 	<a href="/login">Log In</a>
-	<a href="/register">Register</a>
+	<a href="/new">Register</a>
 <% } else { %>
-	<a href="#">Signed in as: <strong><%= user.username %></strong></a>
+	<a href="/<%= user.username %>/edit">Signed in as: <strong><%= user.username %></strong></a>
 	<a href="/logout">Logout</a>
 <% } %>	

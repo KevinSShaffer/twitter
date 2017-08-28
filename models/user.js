@@ -1,11 +1,29 @@
 var mongoose = require('mongoose');
 var passportLocalMongoose = require('passport-local-mongoose');
 
-var User = new mongoose.Schema({
+var userSchema = new mongoose.Schema({
 	username: String,
-	password: String
+	password: String,
+	followers: [
+		{
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "User"
+		}
+	],
+	following: [
+		{
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "User"
+		}
+	],
+	kweets: [
+		{
+			type: mongoose.Schema.Types.ObjectId,
+			ref: 'Kweet'
+		}
+	]
 });
 
-User.plugin(passportLocalMongoose);
+userSchema.plugin(passportLocalMongoose);
 
-module.exports = mongoose.model('User', User);
+module.exports = mongoose.model('User', userSchema);
